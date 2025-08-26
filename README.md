@@ -20,6 +20,7 @@ pip install bee-taxonomy
 
 ### 1. `taxonomy.propose_taxonomy(field: str, description: str, discrete_fields: list[str] = None)`
 **Purpose**: Generate taxonomy suggestions using OpenAI
+
 **Parameters**:
 - `field`: Name of the field to categorize
 - `description`: Description of the field's purpose
@@ -37,6 +38,7 @@ taxonomy.propose_taxonomy(
 
 ### 2. `taxonomy.apply_taxonomy_similarity(discrete_fields: list[str], taxonomy: list[str], category_type: str = None)`
 **Purpose**: Classify values using semantic similarity with vector database
+
 **Parameters**:
 - `discrete_fields`: Values to classify
 - `taxonomy`: List of allowed classification terms
@@ -53,6 +55,8 @@ taxonomy.apply_taxonomy_similarity(
 ```
 
 ### 3. `taxonomy.apply_taxonomy_reasoning(discrete_fields: list[str], taxonomy: list[str], classification_description: str, hash_file: str = None)`
+**Purpose**: Use AI reasoning to classify values into taxonomy
+
 **Parameters**:
 - `discrete_fields`: List of values to classify
 - `taxonomy`: List of allowed categories
@@ -70,6 +74,8 @@ taxonomy.apply_taxonomy_reasoning(
 ```
 
 ### 4. `taxonomy.translate_headers_reasoning(src_lang, dest_lang, headers)`
+**Purpose**: Translate headers between languages using AI reasoning
+
 **Parameters**:
 - `src_lang`: Source language code
 - `dest_lang`: Target language code
@@ -86,6 +92,8 @@ taxonomy.translate_headers_reasoning(
 ```
 
 ### 5. `taxonomy.analyze_text_field(field_name: str, field_value: str, task: Literal["label", "summarize"] = "label")`
+**Purpose**: Analyze text fields for classification or summarization
+
 **Parameters**:
 - `field_name`: Name of the text field
 - `field_value`: Text to analyze
