@@ -54,9 +54,9 @@ class TaxonomyModel(BaseModel):
         """
         fields = info.data.get("discrete_fields", [])
         taxonomy = info.data.get("taxonomy", [])
-        if set(v.keys()) != set(fields):
+        if len(v) != len(fields):
             raise ValueError(
-                f"The keys in the list {fields} do not exactly match the keys in the dictionary {list(v.keys())}"
+                f"The keys in the list ({len(fields)}) do not exactly match the keys in the dictionary ({len(v)})"
             )
         elif not set(v.values()).issubset(set(taxonomy + ["null"] + [None])):
             raise ValueError(
