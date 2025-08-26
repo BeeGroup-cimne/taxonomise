@@ -9,6 +9,13 @@ Import the module with:
 from bee_taxonomy import taxonomy
 ```
 
+## Installation
+
+Install the library using pip:
+```bash
+pip install bee-taxonomy
+```
+
 ## Main Functions
 
 ### 1. `taxonomy.propose_taxonomy(field: str, description: str, discrete_fields: list[str] = None)`
