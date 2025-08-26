@@ -110,6 +110,7 @@ taxonomy.analyze_text_field(
 ```
 
 ## Environment Variables
+Users must rename `.env.example` to `.env` and fill in all the required fields with their specific values:
 - `MODEL_NAME`: Hugging Face model identifier
 - `SERVER_URL`: Base URL for OpenAI-compatible API
 - `API_KEY`: Authentication token for the API
