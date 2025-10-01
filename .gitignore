@@ -2,3 +2,4 @@
 .venv/
 use_cases/chroma/
 *.tmp
+__pycache__/

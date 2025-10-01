@@ -1,4 +1,3 @@
-import glob
 import json
 import os
 import re
@@ -12,7 +11,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from openai import OpenAI
 from pydantic import field_validator, BaseModel, ValidationError
 from tqdm import tqdm
-from .utils import normalize_street_name
+from .utils import load_checkpoint, normalize_street_name, save_checkpoint
 
 load_dotenv()
 
@@ -98,28 +97,6 @@ class TranslationModel(BaseModel):
                 f"The keys in the list {headers} do not exactly match the keys in the dictionary {list(v.keys())}"
             )
         return v
-
-def deprecate_cache_file(file: str = None):
-    """
-    Delete a specific cache file or all temporary files in the current directory.
-    
-    Args:
-        file: Optional specific file path to delete. If None, deletes all .tmp files.
-    """
-    if os.path.isfile(file):
-        os.remove(file)
-        print(f"Removed file: {file}")
-    else:
-        files = glob.glob("*.tmp")
-        if files:
-            for f in files:
-                try:
-                    os.remove(f)
-                    print(f"Removed file: {f}")
-                except Exception as e:
-                    print(f"Cannot remove {f}: {e}")
-        else:
-            print("No files to remove")
 
 def propose_taxonomy(field: str, description: str, discrete_fields: list[str] = None) -> list[str]:
     """
@@ -340,32 +317,6 @@ def reasoning(client, part, taxonomy, classification_description):
     partial_result = json.loads(res)
     return partial_result
 
-def load_checkpoint(tmp_file: str):
-    """
-    Load a previous classification checkpoint from a temporary file.
-    
-    Args:
-        tmp_file: Path to the checkpoint file
-    
-    Returns:
-        Dictionary of previously classified items or empty dict if file doesn't exist
-    """
-    if os.path.exists(tmp_file):
-        with open(tmp_file, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
-
-def save_checkpoint(tmp_file, data):
-    """
-    Save current classification progress to a temporary file.
-    
-    Args:
-        tmp_file: Path where to save the checkpoint
-        data: Dictionary of field-to-classification mappings to persist
-    """
-    with open(tmp_file, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
 def apply_taxonomy_reasoning(discrete_fields: list[str], taxonomy: list[str],
                              classification_description: str, hash_file: str = None):
     """
@@ -525,3 +476,27 @@ def web_search(query):
             })
 
     return results
+
+def classify_element(element, mapping_example):
+    client = OpenAI(base_url=SERVER_URL, api_key=API_KEY)
+
+
+    message = f"""
+    You are an assistant that classifies an item into one of the possible classifications provided.
+    This are the examples, where the key is the element and the value is the classification:
+    {mapping_example}
+    You must reply only with the name of the classification.
+    """
+
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[
+            {"role": "system",
+             "content": message
+            },
+            {"role": "user", "content": f"Now, for this new item, '{element}', choose one of the existing classifications."}
+#{json.dumps(headers, ensure_ascii=False)}"}
+        ]
+    )
+    classification = re.sub(r"<[^>]+>.*?</[^>]+>\s*", "", response.choices[0].message.content, flags=re.DOTALL).strip()
+    return classification
