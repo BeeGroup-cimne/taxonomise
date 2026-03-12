@@ -7,7 +7,7 @@ from typing import Literal
 from dotenv import load_dotenv
 from googlesearch import search
 from langchain_community.vectorstores import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from openai import OpenAI
 from pydantic import field_validator, BaseModel, ValidationError
 from tqdm import tqdm
@@ -151,7 +151,7 @@ def propose_taxonomy(field: str, description: str, discrete_fields: list[str] = 
     # Clean up any HTML tags that might be in the response
     return json.loads(re.sub(r"<[^>]+>.*?</[^>]+>\s*", "", response.choices[0].message.content, flags=re.DOTALL).strip())
 
-def apply_taxonomy_similarity(discrete_fields: list[str], taxonomy: list[str], category_type: str = None):
+def apply_taxonomy_similarity(discrete_fields: list[str], taxonomy: list[str], category_type: str = None, threshold: float = 0.3):
     """
     Classify discrete fields using semantic similarity with a vector database.
     
@@ -159,13 +159,21 @@ def apply_taxonomy_similarity(discrete_fields: list[str], taxonomy: list[str], c
         discrete_fields: List of values to classify
         taxonomy: List of allowed classification terms
         category_type: Optional category type that modifies processing (e.g., 'streets')
-    
+        threshold: Float similarity threshold for considering a match.
+                   For cosine similarity, **0.0** indicates maximum similarity
+                   (documents closest to the query are always included). Higher
+                   values filter out less similar matches.
+ 
     Returns:
         Dictionary mapping each field to its best matching taxonomy term with metadata
     """
-    embedder = HuggingFaceEmbeddings(
-        model_name=os.getenv("EMBEDDER_MODEL"),
-        model_kwargs={"device": "cuda"}
+    embedder = OpenAIEmbeddings(
+        model=os.getenv("EMBEDDER_MODEL"),
+       base_url=f"{os.getenv('EMBEDDER_SERVER_URL')}/v1",
+        api_key=os.getenv("API_KEY"),
+        check_embedding_ctx_length=False,
+        chunk_size=32
+#        model_kwargs={"device": "cuda:1"}
     )
 
     # Create vector database from taxonomy terms
@@ -173,7 +181,7 @@ def apply_taxonomy_similarity(discrete_fields: list[str], taxonomy: list[str], c
         texts=taxonomy,
         embedding=embedder,
         persist_directory="./chroma",
-        collection_metadata={"hnsw:space": "l2"}
+        collection_metadata={"hnsw:space": "cosine"}
     )
 
     results = {}
@@ -187,7 +195,7 @@ def apply_taxonomy_similarity(discrete_fields: list[str], taxonomy: list[str], c
 
         if result:
             match, score = result[0]
-            if score >= 0.35:
+            if score >= threshold:
                 to_check += 1
                 results[field] = {"match": match.page_content, "to_check": True}
             else:

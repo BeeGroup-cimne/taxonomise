@@ -1,5 +1,7 @@
 .env
 .venv/
-use_cases/chroma/
+**/chroma/
 *.tmp
 __pycache__/
+*.gpkg
+*.xlsx

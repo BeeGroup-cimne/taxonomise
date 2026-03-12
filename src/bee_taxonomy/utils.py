@@ -32,14 +32,17 @@ def normalize_street_name(street: str):
     # Split the street name into two parts at the first whitespace
     parts = street.strip().split(maxsplit=1)
     first_word = parts[0]  # Extract the first word (street abbreviation)
-    rest = parts[1]  # Extract the remaining part of the street name
+    if len(parts) > 1:
+        rest = parts[1]  # Extract the remaining part of the street name
     
     # Replace the first word with its normalized form using the MAPPING dictionary
     # If the abbreviation isn't in the mapping, keep the original first word
     normalized_first = MAPPING.get(first_word, first_word)
     
     # Combine the normalized first word with the rest of the name and return
-    return f"{normalized_first} {rest}".strip()
+    if len(parts) > 1:
+        return f"{normalized_first} {rest}".strip()
+    return normalized_first
 
 def load_checkpoint(tmp_file: str):
     """

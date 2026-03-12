@@ -12,7 +12,7 @@ def endesa():
     gp = gpd.read_file("../barcelona_carrerer.gpkg")
     taxonomy = list(gp["NOM_CARRER"].unique())
 #    df = pd.read_excel("2022_Agrupado_Ayunt_Barcelona_Cod_Postal_08030_08033_con_Num_Calle.xlsx")
-    df = pd.read_excel("../Agrupo_Ayunt_Barcelona_Cod_Postal_08002_08003-1.xlsx")
+    df = pd.read_excel("../Agrupado_Ayunt_Barcelona_Cod_Postal_08002_08003-1.xlsx")
     df["street_only"] = (df["STREET_TYPE__C"].astype(str) + " " +
                          df["STREET_DESCRIPTION__C"].astype(str))
     unique_streets = df["street_only"].unique().tolist()
@@ -22,7 +22,7 @@ def endesa():
                     df["STREET_NUMBER__C"].astype("str"))
     # streets = df["concat"].tolist()
 
-    result = tx.apply_taxonomy_similarity(unique_streets, taxonomy, "streets")
+    result = tx.apply_taxonomy_similarity(unique_streets, taxonomy, "streets", 0.2)
 
     final_results = {
         row["concat"]: result.get(row["street_only"], "__INVALID__")
