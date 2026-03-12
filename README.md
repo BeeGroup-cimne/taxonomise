@@ -115,7 +115,7 @@ Users must rename `.env.example` to `.env` and fill in all the required fields w
 - `SERVER_URL`: Base URL for OpenAI-compatible API
 - `API_KEY`: Authentication token for the API
 - `EMBEDDER_MODEL`: Embedding model for semantic similarity
-
+- `EMBEDDER_SERVER_URL`: Base URL for OpenAI-compatible API for embedder model
 ## Features
 - Validation workflow with Pydantic models
 - Progress checkpointing for large datasets
