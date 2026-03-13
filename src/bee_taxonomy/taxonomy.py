@@ -169,7 +169,7 @@ def apply_taxonomy_similarity(discrete_fields: list[str], taxonomy: list[str], c
     """
     embedder = OpenAIEmbeddings(
         model=os.getenv("EMBEDDER_MODEL"),
-       base_url=f"{os.getenv('EMBEDDER_SERVER_URL')}/v1",
+        base_url=f"{os.getenv('EMBEDDER_SERVER_URL')}/v1",
         api_key=os.getenv("API_KEY"),
         check_embedding_ctx_length=False,
         chunk_size=32
