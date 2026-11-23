@@ -28,4 +28,4 @@ dependencies = ["googlesearch-python==1.3.0",
 build-backend = "hatchling.build"
 
 [project.urls]
-Homepage = "https://github.com/Davidoff2103/taxonomy-lib"
+Homepage = "https://github.com/BeeGroup-cimne/taxonomise"
