@@ -58,4 +58,4 @@ jobs:
             awk -v h="## [$v]" 'index($0,h)==1{f=1;next} /^## \[/{f=0} f' "$CHANGELOG" > notes.md
             grep -q '[^[:space:]]' notes.md && notes=(--notes-file notes.md)
           fi
-          gh release create "v$v" dist/* --title "v$v" "${notes[@]}"
+          gh release create "v$v" dist/*.whl dist/*.tar.gz --title "v$v" "${notes[@]}"
